@@ -29,3 +29,4 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
+**/local_test_set.dart

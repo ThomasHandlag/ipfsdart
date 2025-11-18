@@ -1,28 +1,13 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:ipfsdart/ipfsdart.dart';
-import 'package:ipfsdart/ipfs_logger.dart';
+import 'package:ipfsdart/ipfs_client.dart';
 
 void main() async {
-  // Initialize IPFS client with custom logging
-  final client = http.Client();
-  
-  // Create logger with custom settings
-  final logger = IpfsLogger(
-    enableDebug: true,
-    enableInfo: true,
-    enableWarning: true,
-    enableError: true,
-  );
-
   // Initialize IPFSDart with authentication and logger
-  final ipfs = IPFSDart(
-    client,
+  final ipfs = IpfsClient.init(
     uri: Uri.parse('http://localhost:5001'),
     username: 'your-username',
     password: 'your-password',
     authMethod: AuthMethod.basic,
-    logger: logger,
   );
 
   try {
@@ -106,7 +91,5 @@ void main() async {
   } catch (e, stackTrace) {
     print('Error occurred: $e');
     print('StackTrace: $stackTrace');
-  } finally {
-    client.close();
-  }
+  } 
 }

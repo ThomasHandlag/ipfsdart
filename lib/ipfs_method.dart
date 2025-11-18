@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:ipfsdart/ipfs_response.dart';
+part of 'ipfs_client.dart';
 
 abstract class IpfsMethod {
   const IpfsMethod();
@@ -19,6 +17,7 @@ abstract class IpfsMethod {
   static final String pubsubSubPath = '/api/v0/pubsub/sub';
   static final String pubsubPeersPath = '/api/v0/pubsub/peers';
   static final String pubsubLsPath = '/api/v0/pubsub/ls';
+  static final String filesCpPath = '/api/v0/files/cp';
 
   /// Add a file to IPFS
   Future<AddResponse> add(File file);
@@ -49,4 +48,6 @@ abstract class IpfsMethod {
 
   /// List topics subscribed to
   Future<List<String>> pubsubLs();
+
+  Future<String> fileCp(String source, String destination);
 }

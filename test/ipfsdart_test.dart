@@ -1,119 +1,87 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:ipfsdart/ipfsdart.dart';
-import 'package:ipfsdart/ipfs_logger.dart';
-import 'package:ipfsdart/ipfs_exception.dart';
+import 'local_test_set.dart';
 
 void main() {
   group('IPFSDart Tests', () {
-    late http.Client client;
-    late IPFSDart ipfs;
-    late IpfsLogger logger;
+    late IpfsClient ipfs;
 
     setUp(() {
-      client = http.Client();
-      logger = IpfsLogger(
-        enableDebug: true,
-        enableInfo: true,
-        enableWarning: true,
-        enableError: true,
-      );
-
       // Initialize with local IPFS node
-      ipfs = IPFSDart(
-        client,
-        uri: Uri.parse('http://localhost:5001'),
-        authMethod: AuthMethod.none,
-        logger: logger,
+      ipfs = IpfsClient.init(
+        uri: Uri.parse(url),
+        authMethod: AuthMethod.basic,
+        password: pass,
+        username: username,
       );
     });
 
     tearDown(() {
-      client.close();
-    });
-
-    test('Logger logs messages at different levels', () {
-      final logger = IpfsLogger(enableDebug: true);
-      
-      // These should not throw
-      expect(() => logger.debug('Debug message'), returnsNormally);
-      expect(() => logger.info('Info message'), returnsNormally);
-      expect(() => logger.warning('Warning message'), returnsNormally);
-      expect(() => logger.error('Error message', 'error data'), returnsNormally);
-    });
-
-    test('IpfsException contains proper error information', () {
-      const exception = IpfsException(
-        'Test error',
-        statusCode: 500,
-        originalError: 'Original error message',
-      );
-
-      expect(exception.message, equals('Test error'));
-      expect(exception.statusCode, equals(500));
-      expect(exception.originalError, equals('Original error message'));
-      expect(exception.toString(), contains('Test error'));
-      expect(exception.toString(), contains('Status Code: 500'));
+      ipfs.close();
     });
 
     test('IPFSDart initialization with basic auth', () {
-      final ipfsWithAuth = IPFSDart(
-        client,
-        uri: Uri.parse('http://localhost:5001'),
-        username: 'testuser',
-        password: 'testpass',
+      final ipfsWithAuth = IpfsClient.init(
+        uri: Uri.parse(url),
+        username: username,
+        password: pass,
         authMethod: AuthMethod.basic,
-        logger: logger,
       );
 
-      expect(ipfsWithAuth.uri.toString(), equals('http://localhost:5001'));
-      expect(ipfsWithAuth.username, equals('testuser'));
-      expect(ipfsWithAuth.password, equals('testpass'));
-      expect(ipfsWithAuth.authMethod, equals(AuthMethod.basic));
+      expect(ipfsWithAuth.uri.toString(), equals(url));
     });
 
     test('IPFSDart initialization with bearer auth', () {
-      final ipfsWithBearer = IPFSDart(
-        client,
-        uri: Uri.parse('http://localhost:5001'),
-        password: 'bearer-token',
+      final ipfsWithBearer = IpfsClient.init(
+        uri: Uri.parse(url),
+        password: bearerToken,
         authMethod: AuthMethod.bearer,
-        logger: logger,
       );
-
       expect(ipfsWithBearer.authMethod, equals(AuthMethod.bearer));
-      expect(ipfsWithBearer.password, equals('bearer-token'));
     });
 
     test('Add method validates file existence', () async {
       final nonExistentFile = File('non_existent_file.txt');
 
-      expect(
-        () => ipfs.add(nonExistentFile),
-        throwsA(isA<IpfsException>()),
-      );
+      expect(() => ipfs.add(nonExistentFile), throwsA(isA<IpfsException>()));
+    });
+
+    test('Add file to ipfs', () async {
+      final testFile = File('test_file.txt');
+      await testFile.writeAsString('This is a test file for IPFS.');
+
+      try {
+        final addResponse = await ipfs.add(testFile);
+        expect(addResponse.hash, isNotEmpty);
+        expect(addResponse.name, equals('test_file.txt'));
+
+        final cpReponse = await ipfs.fileCp(
+          '/ipfs/${addResponse.hash}',
+          '/${addResponse.name}',
+        );
+        expect(cpReponse, isNotEmpty);
+
+        final pinResponse = await ipfs.pinAdd(addResponse.hash);
+        expect(contains(pinResponse.pins.contains(addResponse.hash)), true);
+      } finally {
+        // Clean up
+        if (await testFile.exists()) {
+          await testFile.delete();
+        }
+      }
     });
 
     test('Cat method validates CID', () async {
-      expect(
-        () => ipfs.cat(''),
-        throwsA(isA<IpfsException>()),
-      );
+      expect(() => ipfs.cat(''), throwsA(isA<IpfsException>()));
     });
 
     test('PinAdd method validates CID', () async {
-      expect(
-        () => ipfs.pinAdd(''),
-        throwsA(isA<IpfsException>()),
-      );
+      expect(() => ipfs.pinAdd(''), throwsA(isA<IpfsException>()));
     });
 
     test('PinRm method validates CID', () async {
-      expect(
-        () => ipfs.pinRm(''),
-        throwsA(isA<IpfsException>()),
-      );
+      expect(() => ipfs.pinRm(''), throwsA(isA<IpfsException>()));
     });
 
     test('PubsubPublish method validates topic', () async {

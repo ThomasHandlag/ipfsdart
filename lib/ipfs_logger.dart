@@ -1,4 +1,4 @@
-/// Custom logger for IPFS operations
+part of 'ipfs_client.dart';
 class IpfsLogger {
   final bool enableDebug;
   final bool enableInfo;

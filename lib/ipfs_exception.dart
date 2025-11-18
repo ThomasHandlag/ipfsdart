@@ -1,4 +1,4 @@
-/// Custom exception for IPFS operations
+part of 'ipfs_client.dart';
 class IpfsException implements Exception {
   final String message;
   final int? statusCode;

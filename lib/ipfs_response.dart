@@ -1,13 +1,13 @@
-import 'dart:typed_data';
+part of 'ipfs_client.dart';
 
 final class AddResponse {
   final Uint64List bytes;
   final String hash;
-  final String mode;
+  final String? mode;
   final Uint64List mTime;
-  final int mTimeNsecs;
+  final int? mTimeNsecs;
   final String name;
-  final String size;
+  final String? size;
 
   const AddResponse({
     required this.bytes,
@@ -21,13 +21,13 @@ final class AddResponse {
 
   factory AddResponse.fromJson(Map<String, dynamic> json) {
     return AddResponse(
-      bytes: Uint64List.fromList((json['Bytes'] as List).map((e) => e as int).toList()),
+      bytes: Uint64List.fromList((json['Bytes'] as List?)?.map((e) => e as int).toList() ?? []),
       hash: json['Hash'] as String,
-      mode: json['Mode'] as String,
-      mTime: Uint64List.fromList((json['MTime'] as List).map((e) => e as int).toList()),
-      mTimeNsecs: json['MTimeNsecs'] as int,
+      mode: json['Mode'] as String?,
+      mTime: Uint64List.fromList((json['MTime'] as List?)?.map((e) => e as int).toList() ?? []),
+      mTimeNsecs: json['MTimeNsecs'] as int?,
       name: json['Name'] as String,
-      size: json['Size'] as String,
+      size: json['Size'] as String?,
     );
   }
 }
