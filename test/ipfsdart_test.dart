@@ -11,9 +11,8 @@ void main() {
       // Initialize with local IPFS node
       ipfs = IpfsClient.init(
         uri: Uri.parse(url),
-        authMethod: AuthMethod.basic,
-        password: pass,
-        username: username,
+        authMethod: AuthMethod.bearer,
+        password: bearerToken,
       );
     });
 
@@ -89,6 +88,12 @@ void main() {
         () => ipfs.pubsubPublish('', 'message'),
         throwsA(isA<IpfsException>()),
       );
+    });
+
+    test('Get file from IPFS with invalid path', () async {
+      final res = await ipfs.getFile('/ipfs/QmUmdPZwpB5yoXYJTGzj4A9UESuedHQSzzE6TiDjgNrbEx');
+     
+      expect(res.data, isNotEmpty);
     });
 
     // Integration tests (require running IPFS node)

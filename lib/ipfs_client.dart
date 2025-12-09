@@ -587,4 +587,48 @@ class IpfsClient extends IpfsMethod {
     _instance = null;
     logger.info('Ipfs client closed');
   }
+
+  @override
+  Future<FileResponse> getFile(
+    String path, {
+    String? output,
+    bool? archive,
+    bool? compress,
+    int? compressionLevel,
+    bool? progress,
+  }) async {
+    final queryParams = <String, String>{'arg': path};
+    final bodyParams = <String, String>{};
+    if (output != null) queryParams['output'] = output;
+    if (archive != null) queryParams['archive'] = archive.toString();
+    if (compress != null) queryParams['compress'] = compress.toString();
+    if (compressionLevel != null) {
+      queryParams['compression-level'] = compressionLevel.toString();
+    }
+
+    if (progress != null) bodyParams['progress'] = progress.toString();
+    try {
+      logger.info('Getting file from path: $path');
+
+      final response = await _makeRequest(
+        IpfsMethod.getPath,
+        {},
+        queryParameters: queryParams,
+        body: bodyParams.isNotEmpty ? bodyParams : null,
+      );
+
+      logger.info('File retrieved successfully from path: $path');
+
+      return FileResponse(data: response.bodyBytes);
+    } catch (e, stackTrace) {
+      if (e is IpfsException) rethrow;
+
+      logger.error('Error getting file', e, stackTrace);
+      throw IpfsException(
+        'Failed to get file from path: $path',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
 }

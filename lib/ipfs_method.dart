@@ -9,6 +9,7 @@ abstract class IpfsMethod {
   static final String pinRmPath = '/api/v0/pin/rm';
   static final String pinLsPath = '/api/v0/pin/ls';
   static final String idPath = '/api/v0/id';
+  static final String getPath = '/api/v0/get';
   static final String versionPath = '/api/v0/version';
   static final String repoStatPath = '/api/v0/repo/stat';
   static final String swarmPeersPath = '/api/v0/swarm/peers';
@@ -50,4 +51,13 @@ abstract class IpfsMethod {
   Future<List<String>> pubsubLs();
 
   Future<String> fileCp(String source, String destination);
+
+  Future<FileResponse> getFile(
+    String path, {
+    String? output, // The path where the output should be stored. Required: no.
+    bool? archive, // Output a TAR archive. Required: no.
+    bool? compress, // Compress the output with GZIP compression. Required: no.
+    int? compressionLevel, // The level of compression (1-9). Required: no.
+    bool? progress, // Stream progress data. Default: true. Required: no.
+  });
 }

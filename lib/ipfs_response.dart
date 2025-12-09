@@ -21,10 +21,14 @@ final class AddResponse {
 
   factory AddResponse.fromJson(Map<String, dynamic> json) {
     return AddResponse(
-      bytes: Uint64List.fromList((json['Bytes'] as List?)?.map((e) => e as int).toList() ?? []),
+      bytes: Uint64List.fromList(
+        (json['Bytes'] as List?)?.map((e) => e as int).toList() ?? [],
+      ),
       hash: json['Hash'] as String,
       mode: json['Mode'] as String?,
-      mTime: Uint64List.fromList((json['MTime'] as List?)?.map((e) => e as int).toList() ?? []),
+      mTime: Uint64List.fromList(
+        (json['MTime'] as List?)?.map((e) => e as int).toList() ?? [],
+      ),
       mTimeNsecs: json['MTimeNsecs'] as int?,
       name: json['Name'] as String,
       size: json['Size'] as String?,
@@ -169,4 +173,10 @@ final class StatsResponse {
       version: json['Version'] as String,
     );
   }
+}
+
+final class FileResponse {
+  final Uint8List data;
+
+  const FileResponse({required this.data});
 }
