@@ -93,7 +93,7 @@ void main() {
     test('Get file from IPFS with invalid path', () async {
       final res = await ipfs.getFile('/ipfs/QmUmdPZwpB5yoXYJTGzj4A9UESuedHQSzzE6TiDjgNrbEx');
      
-      expect(res.data, isNotEmpty);
+      expect(res, isNotEmpty);
     });
 
     // Integration tests (require running IPFS node)
