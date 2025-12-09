@@ -52,7 +52,7 @@ abstract class IpfsMethod {
 
   Future<String> fileCp(String source, String destination);
 
-  Future<FileResponse> getFile(
+  Future<Uint8List> getFile(
     String path, {
     String? output, // The path where the output should be stored. Required: no.
     bool? archive, // Output a TAR archive. Required: no.

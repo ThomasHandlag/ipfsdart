@@ -174,9 +174,3 @@ final class StatsResponse {
     );
   }
 }
-
-final class FileResponse {
-  final Uint8List data;
-
-  const FileResponse({required this.data});
-}
