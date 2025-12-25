@@ -589,7 +589,7 @@ class IpfsClient extends IpfsMethod {
   }
 
   @override
-  Future<Uint8List> getFile(
+  Future<String> getFile(
     String path, {
     String? output,
     bool? archive,
@@ -619,7 +619,7 @@ class IpfsClient extends IpfsMethod {
 
       logger.info('File retrieved successfully from path: $path');
 
-      return response.bodyBytes;
+      return response.body;
     } catch (e, stackTrace) {
       if (e is IpfsException) rethrow;
 
